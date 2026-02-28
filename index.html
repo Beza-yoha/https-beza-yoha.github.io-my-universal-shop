@@ -1,22 +1,22 @@
+<!DOCTYPE html> <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Universal Shop</title>
+</head>
 <body>
 
-    <header>
-        <h1 id="shop-name">Welcome to My Universal Shop</h1>
-        <p>Select a category below to start ordering!</p>
-    </header>
+    <h1 id="shop-name">Welcome to My Shop</h1>
 
     <section id="admin-controls">
-        <h3>Choose Shop Type:</h3>
         <button onclick="changeShop('coffee')">☕ Coffee Shop</button>
         <button onclick="changeShop('flowers')">🌸 Flower Shop</button>
         <button onclick="changeShop('jewelry')">💎 Jewelry Store</button>
     </section>
 
-    <div id="product-list" class="product-grid">
-        </div>
+    <div id="product-list"></div>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="app.js"></script>
-
 </body>
+</html>
