@@ -96,3 +96,19 @@ function buyOnWhatsApp(productName, price, shopName) {
     const whatsappUrl = `https://wa.me/${myNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
 }
+function saveToFirestore(id, name, img) {
+    // Get the price from the new input box
+    const productPrice = document.getElementById('p-price').value;
+
+    db.collection("shops").doc(id).set({
+        businessName: name,
+        logo: img,
+        products: [{ 
+            name: document.getElementById('p-name').value, 
+            price: productPrice // Now saving the real price!
+        }]
+    }).then(() => {
+        alert("Shop Created! Redirecting...");
+        window.location.href = "index.html?id=" + id;
+    });
+}
