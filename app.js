@@ -56,6 +56,26 @@ if (currentId && document.getElementById('product-list')) {
             let html = "";
             data.products.forEach(p => {
                 html += `
+
+                // ... inside the db.collection("shops").doc(currentShopId).get() block ...
+
+            let html = "";
+            data.products.forEach(p => {
+                // PASTE THE NEW CODE RIGHT HERE:
+                html += `
+                <div class="col-md-4">
+                    <div class="product-card">
+                        <h4 class="fw-bold">${p.name}</h4>
+                        <p class="price-tag">$${p.price}</p>
+                        <button class="btn-buy" onclick="buyOnWhatsApp('${p.name}', '${p.price}', '${data.businessName}')">
+                            Buy on WhatsApp 💬
+                        </button>
+                    </div>
+                </div>`;
+            });
+            document.getElementById('product-list').innerHTML = html;
+
+// ...
                 <div class="col-md-4 col-sm-6">
                     <div class="product-card">
                         <h4 class="fw-bold">${p.name}</h4>
@@ -69,4 +89,10 @@ if (currentId && document.getElementById('product-list')) {
             document.getElementById('shop-name').innerText = "Shop Not Found";
         }
     });
+}
+function buyOnWhatsApp(productName, price, shopName) {
+    const myNumber = "251912345678"; // <--- CHANGE THIS TO YOUR NUMBER
+    const message = `Hello ${shopName}! I want to buy: ${productName} for $${price}. Is it available?`;
+    const whatsappUrl = `https://wa.me/${myNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
 }
