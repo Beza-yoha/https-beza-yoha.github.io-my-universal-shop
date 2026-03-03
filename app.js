@@ -112,3 +112,6 @@ function saveToFirestore(id, name, img) {
         window.location.href = "index.html?id=" + id;
     });
 }
+function handleShopCreation() { 
+   // ... your code ...
+}
