@@ -1,53 +1,72 @@
-// 1. Firebase Config
 const firebaseConfig = {
-  apiKey: "AIzaSyBJUkhL15N98dxnB-n3xyXhSBPwV_I3zjQ",
-  authDomain: "my-universal-shop.firebaseapp.com",
-  projectId: "my-universal-shop",
-  storageBucket: "my-universal-shop.firebasestorage.app",
-  messagingSenderId: "724909231088",
-  appId: "1:724909231088:web:f6ed2f86020c8e4c052b35"
+    apiKey: "AIzaSyBJUkhL15N98dxnB-n3xyXhSBPwV_I3zjQ",
+    authDomain: "my-universal-shop.firebaseapp.com",
+    projectId: "my-universal-shop",
+    storageBucket: "my-universal-shop.firebasestorage.app",
+    messagingSenderId: "724909231088",
+    appId: "1:724909231088:web:f6ed2f86020c8e4c052b35"
 };
-
-// 2. Initialize
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// 3. Shop Data
-const shopConfigs = {
-    coffee: { name: "Morning Brew Coffee", products: ["Espresso", "Latte", "Cappuccino"] },
-    flowers: { name: "Petals & Blooms", products: ["Red Roses", "White Lilies", "Sunflowers"] },
-    jewelry: { name: "Luxury Gems", products: ["Gold Ring", "Diamond Necklace", "Silver Bracelet"] }
-};
-
-// 4. Function to change the shop and DRAW the buttons
-function changeShop(type) {
-    const config = shopConfigs[type];
-    document.getElementById('shop-name').innerText = config.name;
+// --- SAVE FUNCTION ---
+async function handleShopCreation() {
+    const id = document.getElementById('shop-id').value.toLowerCase().replace(/\s+/g, '-');
+    const name = document.getElementById('biz-name').value;
+    const file = document.getElementById('logo-file').files[0];
     
-    const list = document.getElementById('product-list');
-    list.innerHTML = ""; // Clear old products
+    let logoData = "https://via.placeholder.com/150";
 
-    config.products.forEach(item => {
-        list.innerHTML += `
-            <div class="product-card" style="border: 1px solid #ccc; padding: 10px; margin: 10px;">
-                <h3>${item}</h3>
-                <button onclick="orderItem('${item}')">Order ${item} Now</button>
-            </div>
-        `;
+    if (file) {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            saveToFirebase(id, name, reader.result);
+        };
+    } else {
+        saveToFirebase(id, name, logoData);
+    }
+}
+
+function saveToFirebase(id, name, logo) {
+    db.collection("shops").doc(id).set({
+        businessName: name,
+        logo: logo,
+        products: [{ 
+            name: document.getElementById('p-name').value, 
+            price: document.getElementById('p-price').value 
+        }]
+    }).then(() => {
+        alert("Success! Your shop is live.");
+        window.location.href = "index.html?id=" + id;
     });
 }
 
-// 5. Function to send the order to Firebase
-function orderItem(item) {
-    db.collection("orders").add({
-        product: item,
-        time: new Date().toLocaleString(),
-        status: "New Order"
-    })
-    .then(() => {
-        alert("🎉 Success! Order for " + item + " sent to your Database!");
-    })
-    .catch((error) => {
-        console.error("Error: ", error);
+// --- LOAD FUNCTION ---
+const urlParams = new URLSearchParams(window.location.search);
+const currentId = urlParams.get('id');
+
+if (currentId && document.getElementById('product-list')) {
+    db.collection("shops").doc(currentId).get().then((doc) => {
+        if (doc.exists) {
+            const data = doc.data();
+            document.getElementById('shop-name').innerText = data.businessName;
+            document.getElementById('logo-place').innerHTML = `<img src="${data.logo}" class="logo-img">`;
+            
+            let html = "";
+            data.products.forEach(p => {
+                html += `
+                <div class="col-md-4 col-sm-6">
+                    <div class="product-card">
+                        <h4 class="fw-bold">${p.name}</h4>
+                        <p class="price-tag mb-3">$${p.price}</p>
+                        <button class="btn-buy" onclick="alert('Order Sent!')">Order Now</button>
+                    </div>
+                </div>`;
+            });
+            document.getElementById('product-list').innerHTML = html;
+        } else {
+            document.getElementById('shop-name').innerText = "Shop Not Found";
+        }
     });
 }
